@@ -1,0 +1,51 @@
+$date
+	Tue Jul 14 21:56:12 2026
+$end
+$version
+	Icarus Verilog
+$end
+$timescale
+	1ps
+$end
+$scope module D_ff_tb $end
+$var wire 1 ! q $end
+$var reg 1 " clk $end
+$var reg 1 # d $end
+$var reg 1 $ rst $end
+$scope module uut $end
+$var wire 1 " clk $end
+$var wire 1 # d $end
+$var wire 1 $ rst $end
+$var reg 1 ! q $end
+$upscope $end
+$upscope $end
+$enddefinitions $end
+$comment Show the parameter values. $end
+$dumpall
+$end
+#0
+$dumpvars
+1$
+0#
+0"
+0!
+$end
+#10000
+0$
+1"
+#20000
+1#
+0"
+#30000
+1!
+1"
+#40000
+0"
+#50000
+0!
+0#
+1"
+#60000
+0"
+#70000
+1"
