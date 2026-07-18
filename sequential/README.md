@@ -1,12 +1,9 @@
 # Sequential
-
-This folder contains sequential logic examples and related Verilog files.
-
-## Contents
-- counters/
-  - reg.v
-  - reg_tb.v
-
+# counters
+> register
+  => better to do reg on enable , reset  separetly for better understanding of how the data gets register at every clk edge.Then with both enable & Reset
+  => For testing better manuval data ..
+  
 ## Notes
 - Use iverilog to compile and simulate the Verilog files.
 - Example:
