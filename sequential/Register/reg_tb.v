@@ -16,12 +16,11 @@ initial begin
     clk = 0;
     d =0;
     en = 0;
-   reset = 1; 
-
+    reset = 1;
     $dumpfile("reg_tb.vcd");
     $dumpvars(0, reg_tb);
-    $monitor("At time %t, d = %b, q = %b", $time, d, q);
-    en = 1; reset = 0;
+    $monitor("time=%0t, clk=%b, en=%b,  reset=%b, d=%b, q=%b", $time, clk, en, reset, d, q);
+    en = 1; reset = 0; 
     d = 8'b00000001; #20;
     en = 0; reset = 0;
     d = 8'b00000010; #20;
@@ -29,7 +28,7 @@ initial begin
     d = 8'b00000100; #20;
     en = 0; reset = 1;
     d = 8'b00001000; #20;
-    en = 1; reset = 1;
+    en = 1; reset = 0;
     d = 8'b00011111; #20;
     en = 0; reset = 1;
     d = 8'b00100000; #20;

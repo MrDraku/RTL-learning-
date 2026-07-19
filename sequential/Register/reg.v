@@ -1,6 +1,7 @@
 module reg8 (
     input clk,
     input en,
+    input shift_dir,
     input reset,
     input [7:0] d,
     output reg [7:0] q
@@ -9,7 +10,7 @@ module reg8 (
         if (reset)
             q <= 8'b0;
         else if (en)
-            q <= d;
+        q<= d;   // load data
     end 
 
 endmodule
