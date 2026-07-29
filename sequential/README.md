@@ -10,8 +10,8 @@
 >> register
   => better to do reg on enable , reset  separetly for better understanding of how the data gets register at every clk edge.Then with both enable & Reset
   => For testing better manuval data  input ...
-  -> for shift reg we use q<= {q[width-2:0], serial_in} for right shift(through away msb ) & for left sift q <= {serial_in,q[WIDTH-1:1]} (Through away LSB so we give WIDTH-1:1)
-  => we can use << or >>  for bit manupulation / simple dtat movement
+  -> for shift reg we use q<= {q[width-2:0], serial_in} for right shift(through away msb ). And  for left sift q <= {serial_in,q[WIDTH-1:1]} (Through away LSB so we give WIDTH-1:1)
+  => we can use << or >>  for bit manupulation / simple data movement
 
 ## Notes
 - Use iverilog to compile and simulate the Verilog files.
