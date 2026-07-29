@@ -23,7 +23,7 @@ module para_counter_tb;
     forever #5 clk = ~clk;
   end
 
-  task  apply_reset;
+  task  apply_reset;   // better to use auto task when calling same veriabel twice in the same task
     begin
       reset = 1;
       en = 0;
