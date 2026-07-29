@@ -18,7 +18,7 @@
   => For the testbench, I added every concept I now use, with a little help from the AI.
   => From here on, it's all about whether I verified it well; not all scenarios will pass.
   ```bash
-  > we mainly focus on parameter in counters now; it gives better flexibility.
+  >  Mainly focus on parameter in counters now; it gives better flexibility.
   ```
   => For the TB, from now on using self-checking is better, along with @always(edge clk).
 
