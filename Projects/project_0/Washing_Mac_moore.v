@@ -13,119 +13,126 @@ module Washing_Mac_moore(
     input done_timer_out,
 
     // outputs
-    output reg water_value,
+    output reg water_valve,
     output reg wash_motor,
     output reg drain_pump,
     output reg spin_motor,
     output reg heater,
     output reg done,
-    output reg [2:0] curret_state
+    output reg [2:0] current_state
 );
 
     // state encoding binary
     localparam IDLE = 3'b000,
                WATER_FILL = 3'b001,
                WASH = 3'b010,
-               DRINE = 3'b011,
+               DRAIN = 3'b011,
                SPIN = 3'b100,
                DONE = 3'b101,
-               paush = 3'b110,
-               error = 3'b111;
+               PAUSE = 3'b110,
+               ERROR = 3'b111;
 
     reg [2:0] next_state;
     reg [2:0] previous_state;
 
     // next-state logic
     always @(*) begin
-        next_state = curret_state;  // default to hold state
-        case (curret_state)
+        next_state = current_state;  // default to hold state
+        case (current_state)
             IDLE: begin
                 if (start && !door_open)
                     next_state = WATER_FILL;
             end
             WATER_FILL: begin
                 if (temp_critical)
-                    next_state = error;
+                    next_state = ERROR;
                 else if (door_open)
-                    next_state = paush;
+                    next_state = PAUSE;
                 else if (water_fill)
                     next_state = WASH;
             end
             WASH: begin
                 if (temp_critical)
-                    next_state = error;
+                    next_state = ERROR;
                 else if (door_open)
-                    next_state = paush;
+                    next_state = PAUSE;
                 else if (wash_done)
-                    next_state = DRINE;
+                    next_state = DRAIN;
             end
-            DRINE: begin
+            DRAIN: begin
                 if (temp_critical)
-                    next_state = error;
+                    next_state = ERROR;
                 else if (door_open)
-                    next_state = paush;
+                    next_state = PAUSE;
                 else if (drain_done)
                     next_state = SPIN;
             end
             SPIN: begin
                 if (temp_critical)
-                    next_state = error;
+                    next_state = ERROR;
                 else if (door_open)
-                    next_state = paush;
+                    next_state = PAUSE;
                 else if (spin_done)
                     next_state = DONE;
             end
             DONE: begin
-                if (done_timer_out && !door_open)
-                    next_state = DONE;
-                else if (done_timer_out && door_open) 
+                // Return to the idle after completion only when timer expired and door opened
+                if (done_timer_out && door_open)
                     next_state = IDLE;
+                else
+                    next_state = DONE;
             end
-            paush: begin
+            PAUSE: begin
                 if (!door_open)
                     next_state = previous_state;
             end
-            error: begin
+            ERROR: begin
                 if (!temp_critical)
                     next_state = previous_state;
             end
-            default: next_state = IDLE;
+            // safety
+            default: begin
+                next_state = IDLE;
+            end
         endcase
     end
 
     // state update (state register) store fsm states
     always @(posedge clk or posedge reset) begin
         if (reset) begin
-            curret_state <= IDLE;
-            previous_state <= IDLE;  // wont be used in reset state, but we can set it to IDLE for safety
-        end else if (next_state == paush ) begin
-            previous_state <= curret_state;
+            current_state <= IDLE;
+            previous_state <= IDLE;  // won't be used in reset state, but set to IDLE for safety
         end else begin
-            curret_state <= next_state;
+            if ((next_state == PAUSE || next_state == ERROR) && (current_state != PAUSE && current_state != ERROR)) begin
+                previous_state <= current_state;
+            end
+            // update the current state
+            current_state <= next_state;
         end
     end
            // output logic
     always @(*) begin
-        water_value = 1'b0;
+        water_valve = 1'b0;
         wash_motor = 1'b0;
         drain_pump = 1'b0;
         spin_motor = 1'b0;
         heater = 1'b0;
         done = 1'b0;
-          // state-based output logic
-        case (curret_state)
+        // state-based output logic
+        case (current_state)
             IDLE: begin
-                water_value = 1'b1; // default case, since all outputs are 0, we can set one output to 1 to indicate the machine is idle
+                // all outputs remain 0 in IDLE
             end
             WATER_FILL: begin
-                water_value = 1'b1;
+                water_valve = 1'b1;
             end
             WASH: begin
                 wash_motor = 1'b1;
                 if (!temp_high)
                     heater = 1'b1;
             end
-            DRINE: begin                drain_pump = 1'b1;
+            DRAIN: begin 
+                 drain_pump = 1'b1;
             end
             SPIN: begin
                 spin_motor = 1'b1;
@@ -133,7 +140,14 @@ module Washing_Mac_moore(
             DONE: begin
                 done = 1'b1;
             end
+            PAUSE: begin
+                // all outputs are 0
+            end
+            ERROR: begin
+                // all outputs are 0
+            end
             default: begin
+                // all outputs are 0
             end
         endcase
     end
