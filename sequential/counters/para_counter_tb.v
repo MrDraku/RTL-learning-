@@ -20,7 +20,7 @@ module para_counter_tb;
 
   initial begin
     clk = 0;
-    forever #5 clk = ~clk;
+    forever #5 clk = ~clk;  // awlauy@()
   end
 
   task  apply_reset;   // better to use auto task when calling same veriabel twice in the same task
@@ -55,9 +55,9 @@ module para_counter_tb;
       end
     end
   endfunction
-
+ // actual simlation
   initial begin
-    $dumpfile("para_counter.vcd");
+    $dumpfile("para_counter.vcd");  // file generation 
     $dumpvars(0, para_counter_tb);
     $monitor("time=%0t clk=%b en=%b reset=%b count=%b tc=%b", $time, clk, en, reset, count, tc);
 
@@ -74,9 +74,9 @@ module para_counter_tb;
     end
     while (!tc) @(posedge clk);
     $display("Counter reached MAX value: %b, tc=%b", count, tc);
-    @(posedge clk);
-    $display(" after wrap , count=%b, tc=%b", count, tc);
+    @(posedge clk);   // delay
+    $display(" after wrap , count=%b, tc=%b", count, tc);  // same as printf in c 
     $display("Test completed successfully");
-    $finish;
+    $finish;   // finish the function call
   end
 endmodule
