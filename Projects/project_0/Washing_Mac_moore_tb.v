@@ -418,22 +418,47 @@ module Washing_Mac_moore_tb;
         $display("MONITOR | T =%t | STATE=%s | wv =%b wm =%b DP =%b SM =%b H= %b DONE= %b ",
              $time, state_name(current_state), water_valve, wash_motor, drain_pump, spin_motor, heater, done);
     end
+    initial begin 
+        $dumpfile("wave.vcd");
+        $dumpvars(0, Washing_Mac_moore_tb);
+    end
 
     initial begin
-      /// count Initilization
+      // count Initilization
         pass_count = 0;
         fail_count = 0;
+        //-----------------------------------------------
+        //Initial signal values
+        //----------------------------------------------------
+        reset            = 1'b0;
+        start            = 1'b0;
+        water_fill       = 1'b0;
+        wash_done        = 1'b0;
+        drain_done       = 1'b0;
+        spin_done        = 1'b0;
+        door_open        = 1'b0;
+        temp_high        = 1'b0;
+        temp_critical    = 1'b0;
+        done_timer_out   = 1'b0;
 
     
-
-
-
         reset_dut;
         test_normal_cycle;
+
         reset_dut;
         test_door_pause;
+
         reset_dut;
         test_temperature_error;
+
+        reset_dut;
+        test_high_temperature;
+
+        reset_dut;
+        test_pause_from_water_fill;
+
+        reset_dut;
+        test_error_from_drain;
 
 
         #20;
