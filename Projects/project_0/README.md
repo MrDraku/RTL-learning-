@@ -16,7 +16,6 @@ I chose a Smart Washing Machine Controller because it represents a real-world em
 - Pause/Resume Mechanism
 - Safety and Error Handling
 - RTL Design & Functional Verification
-
 ## What I Learned
 
 This project taught me that RTL design is much more than writing Verilog. Every block of hardware begins with a specification, which is then translated into states, inputs, outputs, transition logic, and finally verified through simulation.
@@ -30,3 +29,5 @@ This project taught me that RTL design is much more than writing Verilog. Every 
 - Git & GitHub
 
 > "This project marks the beginning of my RTL design journey, where I learned to convert engineering specifications into reliable digital hardware."
+ ## VERIFICATION 
+ >In  verification  we did it manly using task and added a  checker for self checking 
