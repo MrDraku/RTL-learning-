@@ -274,13 +274,149 @@ module Washing_Mac_moore_tb;
                 1'b0, 1'b1, 1'b0, 1'b0, 1'b1, 1'b0
             );
 
-            $display("TEST 2 COMPLETED");
+            $display("***********TEST 2 COMPLETED*****************");
         end
     endtask
+    task test_temperature_error;
+    begin
+        $display("\n-------------TEST 3: CRITICAL TEMPERATUE----------------\n");
+        pulse_start;
+        check_state(WATER_FILL);
 
+        // WATER_FILL -> WASH
+        pulse_water_fill;
+        check_state(WASH);
+
+        // Critical Temp
+        temp_critical =1'b1;
+        @(posedge clk);
+        #1;
+        check_state_and_outputs(
+            ERROR,
+            0,0,0,0,0,0
+        );
+        //-----------------------------------------------------------
+        // clear critical_temp =>> ERROR -> Previous_state  =>> WASH
+        //-----------------------------------------------------------
+        temp_critical =1'b0;
+        @(posedge clk);
+        #1;
+        check_state_and_outputs(
+            WASH,
+            0,1,0,0,1,0
+        );
+        $display("--------TEST 3 COMPLETE");
+    end
+    endtask
+    //-----------------------------------------------------------------------------
+    // TEST 4
+    // HIGH TEMP -> HEATER OFF
+    //-------------------------------------------------------------------------------
+    task test_high_temperature;
+    begin
+        $display("\n---------------TEST 4: HIGH TEMPERATURE/HEATER ------------------\n");
+        pulse_start;
+        check_state(WATER_FILL);
+
+        // WATER_FILL -> WASH 
+        pulse_water_fill;
+        check_state(WASH);
+        check_outputs(
+        0,1,0,0,1,0
+        ); // heater initialy be ON 
+
+        temp_high = 1'b1;  // Heater shoulde be off
+        #1;
+        check_outputs(
+            0,1,0,0,0,0
+        );
+        temp_high =1'b0;
+        #1;
+        check_outputs(
+            0,1,0,0,1,0
+        );
+        $display("************** TEST 4 : COMPLETE***************************");
+    end
+    endtask
+
+    //=============================================================================
+    // TEST 5 => DOOR_OPEN -> DURING WATER_FILL
+    //=============================================================================
+    task test_pause_from_water_fill;
+    begin
+        $display("\n------------------TEST 5: PAUSE FROM WATER_FILL----------------------\n");
+        pulse_start;
+        check_state(WATER_FILL);
+        door_open = 1'b1; // Open door
+        @(posedge clk);
+        #1;
+        check_state_and_outputs(
+            PAUSE,
+            0,0,0,0,0,0
+        );
+        // Close door
+        door_open = 1'b0;
+        @(posedge clk);
+        #1;
+        check_state_and_outputs(
+            WATER_FILL,
+            1,0,0,0,0,0
+        );
+        $display("***************** TEST 5 COMPLETE*****************");
+    end
+    endtask
+    //==============================================================================
+    // TEST 6 : CRITICAL TEMPERATURE DURING DRAIN
+    //================================================================================
+    task test_error_from_drain;
+    begin
+        $display("\n -----------------TEST 6 : CRITICAL TEMP DURING DRAIN--------------------\n");
+        pulse_start;
+        pulse_water_fill;
+        pulse_wash_done;
+
+        check_state(DRAIN);
+
+        temp_critical = 1'b1;
+        @(posedge clk );
+        #1;
+        check_state_and_outputs(
+            ERROR,
+            0,0,0,0,0,0
+        );
+
+        temp_critical = 1'b0;
+        @(posedge clk );
+        #1;
+        check_state_and_outputs(
+            DRAIN,
+            0,0,1,0,0,0
+        );
+        $display("************************* TEST 6 COMPLETE ***********************");
+    end
+    endtask
+
+    //===================================================================================
+    // SAFTEY CHECK 
+    // WASH/SPIN motor and DRAIN pump -> X never together 
+    // HEATER must never be ON when temp_high is asserted 
+    //========================================================================================
+    always @(posedge clk) begin
+        if ((wash_motor || spin_motor) && (drain_pump)) begin
+            $display("FAIL | SAFETY | Time = %t | Motor and drain pump activated together ", $time);
+            fail_count = fail_count + 1;
+        end
+        if (heater && temp_high) begin
+            $display("FAIL | SAFETY | Time = %t | Heater on during temperature high!!", $time);
+            fail_count = fail_count + 1;
+        end
+    end
+
+
+        // MONITORE 
     always @(posedge clk) begin
         $display("MONITOR | T =%t | STATE=%s | wv =%b wm =%b DP =%b SM =%b H= %b DONE= %b ",
-                 $time, state_name(current_state), water_valve, wash_motor, drain_pump, spin_motor, heater, done);
+             $time, state_name(current_state), water_valve, wash_motor, drain_pump, spin_motor, heater, done);
     end
 
     initial begin
@@ -288,10 +424,17 @@ module Washing_Mac_moore_tb;
         pass_count = 0;
         fail_count = 0;
 
+    
+
+
+
         reset_dut;
         test_normal_cycle;
         reset_dut;
         test_door_pause;
+        reset_dut;
+        test_temperature_error;
+
 
         #20;
         $display("\n -------------------          VERIFICATION SUMMARY    --------------------------      \n");
