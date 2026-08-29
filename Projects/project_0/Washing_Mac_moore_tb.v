@@ -61,6 +61,7 @@ module Washing_Mac_moore_tb;
     end
      // Foe readability in simulation output 
     function [8*16-1:0] state_name;   //  returning a text sting  => 128bits = 2^8 => 128 -1 = 127
+//// 16 characters × 8 bits/character = 128 bits
      // 16 - char text string 
         input [2:0] state;
         begin
