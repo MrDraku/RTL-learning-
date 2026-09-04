@@ -63,8 +63,11 @@ module uart_tx_tb ;
   begin 
     // Sample in the middle of the baud period to avoid edge ambiguity  434 / 2 = 217
     repeat(HALF_BIT) @(posedge clk) ;
+    #1; // Avoid race conditions in simulation, sample after posedge clk
+
+
     // debug: show shift register and bit counter inside DUT
-    $display("DEBUG: time=%t, tx_start(in uut)=%b, data_reg=%b, shift_reg=%b, bit_counter=%0d, tx=%b", $time, uut.tx_start, uut.data_reg, uut.shift_reg, uut.bit_counter, tx);
+    //$display("DEBUG: time=%t, tx_start(in uut)=%b, data_reg=%b, shift_reg=%b, bit_counter=%0d, tx=%b", $time, uut.tx_start, uut.data_reg, uut.shift_reg, uut.bit_counter, tx);
     if ( tx === expected ) begin
       $display("PASS : Tx bit is correct   \n ", $time) ;
      
@@ -77,14 +80,6 @@ module uart_tx_tb ;
   end
   endtask
 
-  
-  
-    
-
-
-
-
-
  //=================================================
  // Monituring the DUT
  //=================================================
@@ -96,6 +91,10 @@ module uart_tx_tb ;
     $dumpfile("wave.vcd") ;
     $dumpvars(0, uart_tx_tb) ;
   end
+
+  //==================================================
+  // Main Test  sequence
+  //==================================================
   initial begin
 
      reset = 1'b0 ;
@@ -110,7 +109,15 @@ module uart_tx_tb ;
     tx_start = 1'b1 ;
     @(posedge clk) ;
     #1;
+
     tx_start = 1'b0 ;
+    // check tahat TX is busy after start
+    if (tx_busy !== 1'b1)
+      $display("ERROR : UART  should be busy " , $time) ;
+    else 
+      $display("PASS : UART is busy after start " , $time) ;
+    // 8'h41 = 0100_0001
+    //UART sends LSB first, so the sequence of bits sent is: 0100_0001
     check_bit(1'b0) ; // start bit
     check_bit(1'b1) ; // bit 0
     check_bit(1'b0) ; // bit 1
@@ -121,13 +128,98 @@ module uart_tx_tb ;
     check_bit(1'b1) ; // bit 6
     check_bit(1'b0) ; // bit 7
     check_bit(1'b1) ; // stop bit
-   
 
-    
+//==================================================
+// TEST 3 : TX_start is asserted while TX is busy
+//==================================================
+  $display("\n---------TEST : 3 TX_start asserted while TX is busy --------- \n ") ;
+        reset_dut ;
+  // start first transmission
+    tx_data = 8'h41 ;
+    tx_start = 1'b1 ;
+    @(posedge clk) ;
+    #1;
+    tx_start = 1'b0 ;
+    // check that TX is busy after start
+    if (tx_busy !== 1'b1)
+      $display("ERROR : UART  should be busy " , $time) ;
+    else 
+      $display("PASS : UART is busy after start " , $time) ;
+     
+    // while TX is busy, assert TX_start again with new data
+    tx_data = 8'h55 ;
+    tx_start = 1'b1 ;
+    @(posedge clk) ;
+    #1;
+    tx_start = 1'b0 ;
 
+    // check that TX is still busy and the data being sent is still the first one (8'h41)
+    if (tx_busy !== 1'b1)
+      $display("ERROR : UART should still be busy " , $time) ;
+    else 
+      $display("PASS : UART is still busy after second start " , $time) ;
 
-//$display ("pass_count = %0d, error_count = %0d", pass_count, error_count) ;
+      //==================================================
+      // proof that the second data (8'h55) is not sent until the first transmission is complete
+      // 8'h41 = 0100_0001 . Ignpore (8'h55 = 0101_0101)
+      //==================================================
+      check_bit(1'b0) ; // start bit of first transmission
+      check_bit(1'b1) ; // DATA0 
+      check_bit(1'b0) ; // DATA1
+      check_bit(1'b0) ; // DATA2
+      check_bit(1'b0) ; // DATA3
+      check_bit(1'b0) ; // DATA4
+      check_bit(1'b0) ; // DATA5
+      check_bit(1'b1) ; // DATA6
+      check_bit(1'b0) ; // DATA7
+      check_bit(1'b1) ; // stop bit of first transmission
+
+      //==================================================
+      //TEST 4 : BACK TO BACK TRANSMISSION
+      //==================================================
+      $display("\n---------TEST : 4 BACK TO BACK TRANSMISSION --------- \n ") ;
+      
+      reset_dut ;
+      // send first data 8'h41
+      tx_data = 8'h41 ;
+      tx_start = 1'b1 ;
+      @(posedge clk) ;
+      #1;
+      tx_start = 1'b0 ;
+      // wait for first transmission to complete
+      while (tx_busy == 1'b1) begin
+        @(posedge clk) ;
+        #1;
+      end
+      // send second data 8'h55
+      tx_data = 8'h55 ;
+      tx_start = 1'b1 ;
+      @(posedge clk) ;
+      #1;
+      tx_start = 1'b0 ;
+      if (tx_busy !== 1'b1)
+        $display("ERROR : UART  should be busy " , $time) ;
+      else 
+        $display("PASS : UART is busy after start " , $time) ;
+      // 8'h55 = 0101_0101
+      check_bit(1'b0) ; // start bit of second transmission
+      check_bit(1'b1) ; // DATA0
+      check_bit(1'b0) ; // DATA1
+      check_bit(1'b1) ; // DATA2
+      check_bit(1'b0) ; // DATA3
+      check_bit(1'b1) ; // DATA4
+      check_bit(1'b0) ; // DATA5
+      check_bit(1'b1) ; // DATA6
+      check_bit(1'b0) ; // DATA7
+      check_bit(1'b1) ; // stop bit of second transmission
+
+      //==================================================
+      // END OF BASIC TESTS
+      //==================================================
+      $display("\n===========================================================\n");
+      $display("UART TX BASIC TESTBENCH COMPLETE\n");
+      $display("===========================================================\n");
 
      $finish ;
   end
-  endmodule
+endmodule
