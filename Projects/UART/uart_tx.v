@@ -13,7 +13,7 @@ module uart_tx #(parameter CLK_PER_BIT = 434 )  // 50 MHZ / 115200 baud  ~ 434
 //===============================================================
 //FSM STATES 
 //===============================================================
-localparam IDEL  = 2'b00,
+localparam IDLE  = 2'b00,
            START = 2'b01,
            DATA  = 2'b10, 
            STOP  = 2'b11;
@@ -35,7 +35,7 @@ wire baud_done = (baud_counter == CLK_PER_BIT -1);
 //===============================================================
 always @(posedge clk or posedge reset) begin
     if(reset) begin
-        state <= IDEL ;
+        state <= IDLE ;
     end else begin
         state <= next_state ;
     end
@@ -46,7 +46,7 @@ end
 always @(*) begin
     next_state = state ;
     case (state)
-    IDEL : begin
+    IDLE : begin
         if(tx_start)
          next_state = START ;
     end
@@ -60,10 +60,10 @@ always @(*) begin
     end
     STOP : begin
         if (baud_done)
-         next_state = IDEL ;
+         next_state = IDLE ;
     end
     default :
-    next_state = IDEL ;
+    next_state = IDLE ;
     endcase
 end
 //===============================================================
@@ -77,7 +77,7 @@ always @(posedge clk or posedge reset) begin
         bit_counter  <= 3'b0 ;
     end else begin
     case(state)
-     IDEL :begin
+     IDLE :begin
          baud_counter <= 16'b0 ;
          bit_counter  <= 3'b0 ;
          if(tx_start)begin
@@ -121,7 +121,7 @@ end
 //===============================================================
 always @(*) begin
     case (state)
-    IDEL :begin
+    IDLE :begin
         tx = 1'b1 ;
         tx_busy = 1'b0;
     end
@@ -143,4 +143,5 @@ always @(*) begin
     end
     endcase
 end
+
 endmodule 

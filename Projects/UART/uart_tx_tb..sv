@@ -220,6 +220,16 @@ module uart_tx_tb ;
       $display("UART TX BASIC TESTBENCH COMPLETE\n");
       $display("===========================================================\n");
 
+      //==================================================
+      //ASSERTIONS
+      //==================================================
+      $display("\n---------ASSERTIONS --------- \n ") ;
+      // check that tx is idle after all transmissions
+      assert property(
+        !tx_busy |-> tx == 1'b1
+      );
+
+
      $finish ;
   end
 endmodule
