@@ -1,55 +1,115 @@
-# RTL Learning — Verilog Design & Verification
+# RTL Design and Verification Repository
 
-Hands-on Verilog RTL design and simulation-based verification, built while working through a self-directed RTL/DV engineering roadmap. Every design here is implemented and verified with a matching testbench — this repo tracks actual hands-on work, not tutorial follow-alongs.
+This repository contains a collection of digital design and verification projects implemented in Verilog. The work focuses on building practical RTL systems, validating behavior with simulation, and developing a strong understanding of sequential and combinational digital logic.
 
-**Tools:** Icarus Verilog, GTKWave, VS Code, Git
+The projects in this repository are organized around hands-on learning in hardware design, testbench development, and verification workflows. Each module is paired with a testbench to validate expected behavior under realistic timing conditions.
 
----
+## Tools and Workflow
+
+- Verilog HDL
+- Icarus Verilog
+- Verilator
+- GTKWave
+- Visual Studio Code
+- Git and GitHub
 
 ## Repository Structure
 
----
+### Projects
 
-## Featured Project
+- **UART** — 8-bit UART transmitter design with a finite-state machine, baud-rate generation, and verification testbench
+- **Washing Machine Controller** — Moore FSM-based controller for a smart washing machine including state transitions, safety handling, and output control
 
-### Smart Washing Machine Controller (`Projects/project_0/`)
-An 8-state Moore FSM (`Idle → Fill → Wash → Drain → Spin → Done`, with `Pause` and `Error` handling) modeling a washing machine's control logic — including door/temperature safety behavior and motor/heater/pump control signals.
+### Sequential
 
-- `Washing_Mac_moore.v` — DUT
-- `Washing-Mac_moore_tb.v` — self-checking testbench with clock-synchronous stimulus
+- **Register** — basic register implementation and validation
+- **Counters** — parameterized counter design with simulation-based verification
 
----
+### Combinational
 
-## Sequential (`sequential/`)
-- **Register** — basic register design
-- **counters** — parameterized counter with a parameterized, loop-driven testbench
-
-## Combinational (`combinational/`)
-- **CLA** — Carry Look-Ahead Adder (including a 16-bit variant)
-- **ALU** — modular arithmetic/logic unit
-- Logic gate fundamentals: AND, OR, NAND, OR-NAND composite logic
+- **Carry Look-Ahead Adder (CLA)** — 16-bit carry-look-ahead implementation
+- **ALU** — arithmetic and logic unit design
 - **Full Adder**
-- **Mux/Demux** — 2-to-1 multiplexer, demultiplexer
+- **Mux / Demux**
 - **Priority Encoder**
-- **Comparator** — 2-bit comparator
-- **Parity generators** — even and odd parity
-
-Every design above has a matching `_tb.v` testbench validating its behavior.
-
----
+- **Comparator**
+- **Parity Generators** — even and odd parity logic
+- **Logic gate fundamentals** — AND, OR, NAND, and OR-NAND gate combinations
 
 ## Verification Approach
 
-Each design follows a consistent flow: define expected behavior → write test scenarios → build a self-checking testbench → simulate → check pass/fail. Testbenches use clock-synchronous stimulus timing (`posedge`-driven, delayed assignment) to avoid race conditions, with waveform-based debugging via GTKWave.
+Each design follows a consistent verification flow:
 
----
+1. Define the expected functional behavior
+2. Write a self-checking testbench
+3. Apply stimulus using clock-driven timing
+4. Simulate the design
+5. Inspect waveforms and validate outputs
+6. Iterate until the design meets the specification
 
-## Currently In Progress
+This approach emphasizes functional correctness, timing-aware verification, and disciplined digital design methodology.
 
-This repo will grow alongside an ongoing RTL/DV roadmap: RTL synthesis and static timing analysis, protocol RTL (UART/SPI), SystemVerilog, and UVM-based verification tied to real designs. New work is added as it's actually completed and verified — not in advance.
+## Featured Projects
 
----
+### Smart Washing Machine Controller
+
+The washing machine controller is a Moore FSM implemented in Verilog. It models machine behavior across multiple operational states, including:
+
+- Idle
+- Water fill
+- Wash
+- Drain
+- Spin
+- Done
+- Pause
+- Error
+
+The FSM includes safety-related transitions for door status and temperature conditions, and it drives control outputs such as valve, pump, heater, and motor signals.
+
+### UART Transmitter
+
+The UART project implements an 8-bit serial transmitter in Verilog. The module uses a finite-state machine to generate the standard UART frame format:
+
+- 1 start bit
+- 8 data bits, LSB first
+- 1 stop bit
+
+The design includes:
+
+- a parameterized baud-rate generator
+- shift register-based data transmission
+- busy signal generation for transmission control
+- reset and ready-state handling
+
+The UART transmitter is validated using a dedicated testbench that checks reset behavior, normal data transmission, and back-to-back transmission scenarios.
+
+## Quick Start
+
+### Lint a design
+
+```bash
+verilator --lint-only -Wall Projects/UART/uart_tx.v
+```
+
+### Simulate a testbench
+
+```bash
+iverilog -g2012 Projects/UART/uart_tx_tb..sv Projects/UART/uart_tx.v -o uart_tx_tb.out
+vvp uart_tx_tb.out
+```
+
+## Current Focus
+
+This repository reflects an ongoing progression in RTL development and verification, covering:
+
+- combinational logic design
+- sequential logic and state machines
+- protocol-oriented digital designs such as UART
+- simulation and lint-based validation
+- structural design review and verification discipline
 
 ## Contact
 
-Guguloth Laxman — gugulothlaxman369@gmail.com · [LinkedIn](https://linkedin.com/in/guguloth-laxman-282a86425)
+Guguloth Laxman  
+Email: gugulothlaxman369@gmail.com  
+LinkedIn: https://linkedin.com/in/guguloth-laxman-282a86425

@@ -1,3 +1,37 @@
-sim
+# --- Tool-generated files ---
+# Yosys / synthesis output
+*.dot
+*.log
+*.rpt
+*.yslog
+
+# Simulation waveforms and artifacts
 *.vcd
+*.fst
+*.lxt
+*.wlf
 *.out
+*.vvp
+
+# Local simulator working directories
+sim/
+work/
+
+# Generated diagrams / images
+*.png
+*.jpg
+*.jpeg
+*.svg
+*.gif
+*.bmp
+
+# Temporary and backup files
+*.tmp
+*.bak
+*~
+
+# --- Editor / OS noise ---
+.vscode/
+*.swp
+*.swo
+.DS_Store
