@@ -5,7 +5,7 @@ This folder contains basic combinational digital logic designs built in Verilog.
 ## Focus Areas
 
 - Logic gates: AND, OR, NAND, and OR-NAND
-- Arithmetic circuits: full adder, CLA adder, ALU
+- Arithmetic circuits: full adder, CLA adsder, ALU
 - Data selection: mux and demux
 - Comparison and encoding: comparator, priority encoder
 - Error detection: even and odd parity
@@ -16,4 +16,4 @@ These designs are used to practice Boolean algebra, signal flow, gate-level mode
 
 ## Verification
 
-Each design is typically validated with a matching testbench and simulated to confirm functional behavior.
+Each design is typically validated with a matching testbench and simulated to confirm functional behavior..

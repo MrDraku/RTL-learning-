@@ -12,6 +12,8 @@
 *.wlf
 *.out
 *.vvp
+*.out
+*.sim
 
 # Local simulator working directories
 sim/
