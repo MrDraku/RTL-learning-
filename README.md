@@ -49,40 +49,6 @@ Each design follows a consistent verification flow:
 
 This approach emphasizes functional correctness, timing-aware verification, and disciplined digital design methodology.
 
-## Featured Projects
-
-### Smart Washing Machine Controller
-
-The washing machine controller is a Moore FSM implemented in Verilog. It models machine behavior across multiple operational states, including:
-
-- Idle
-- Water fill
-- Wash
-- Drain
-- Spin
-- Done
-- Pause
-- Error
-
-The FSM includes safety-related transitions for door status and temperature conditions, and it drives control outputs such as valve, pump, heater, and motor signals.
-
-### UART Transmitter
-
-The UART project implements an 8-bit serial transmitter in Verilog. The module uses a finite-state machine to generate the standard UART frame format:
-
-- 1 start bit
-- 8 data bits, LSB first
-- 1 stop bit
-
-The design includes:
-
-- a parameterized baud-rate generator
-- shift register-based data transmission
-- busy signal generation for transmission control
-- reset and ready-state handling
-
-The UART transmitter is validated using a dedicated testbench that checks reset behavior, normal data transmission, and back-to-back transmission scenarios.
-
 ## Quick Start
 
 ### Lint a design
