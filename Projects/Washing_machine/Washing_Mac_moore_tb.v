@@ -476,4 +476,5 @@ module Washing_Mac_moore_tb;
         #10;
         $finish;
     end
+    
 endmodule
