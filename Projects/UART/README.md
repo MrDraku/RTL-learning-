@@ -35,7 +35,7 @@ Main RTL file:
 
 Testbench file:
 
-- `uart_tx_tb..sv`
+- `uart_tx_tb.sv`
 
 Generated synthesis output:
 
