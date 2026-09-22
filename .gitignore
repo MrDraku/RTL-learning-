@@ -27,6 +27,7 @@ work/
 *.gif
 *.bmp
 
+
 # Temporary and backup files
 *.tmp
 *.bak
